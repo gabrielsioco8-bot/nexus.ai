@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nexus AI</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #eef4ff;
+  color: #24304a;
+  min-height: 100vh;
+}
+
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 270px;
+  background: white;
+  padding: 24px 18px;
+  border-right: 1px solid #dce6f8;
+}
+
+.logo {
+  font-size: 25px;
+  font-weight: bold;
+  color: #3978e8;
+  margin-bottom: 25px;
+}
+
+.logo span {
+  color: #8b75ed;
+}
+
+button {
+  cursor: pointer;
+}
+
+.new-btn, .action-btn {
+  border: none;
+  padding: 12px 15px;
+  border-radius: 12px;
+  background: #3978e8;
+  color: white;
+  font-weight: bold;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.new-btn:hover, .action-btn:hover {
+  background: #285fc2;
+}
+
+.sidebar h3 {
+  font-size: 14px;
+  color: #8491a8;
+  margin: 25px 0 12px;
+}
+
+.lesson-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lesson-item {
+  background: #f0f5ff;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.lesson-item:hover {
+  background: #dfeaff;
+}
+
+.lesson-item small {
+  display: block;
+  color: #8794aa;
+  margin-top: 5px;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.topbar {
+  background: white;
+  padding: 18px 25px;
+  border-bottom: 1px solid #dce6f8;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.status {
+  color: #29ad83;
+  font-size: 12px;
+}
+
+.robot-area {
+  text-align: center;
+  padding: 28px 15px 12px;
+}
+
+.robot {
+  width: 145px;
+  height: 125px;
+  background: linear-gradient(145deg, #8bdcff, #5795f5);
+  border: 5px solid white;
+  border-radius: 42px;
+  margin: 0 auto 15px;
+  position: relative;
+  box-shadow: 0 12px 25px #8ab8ef66;
+  animation: float 3s ease-in-out infinite;
+}
+
+.antenna {
+  position: absolute;
+  width: 9px;
+  height: 22px;
+  background: #5795f5;
+  top: -24px;
+  left: 63px;
+  border-radius: 10px;
+}
+
+.antenna::before {
+  content: "";
+  position: absolute;
+  width: 17px;
+  height: 17px;
+  background: #a78bfa;
+  border-radius: 50%;
+  top: -10px;
+  left: -4px;
+}
+
+.eyes {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  padding-top: 37px;
+}
+
+.eye {
+  width: 23px;
+  height: 29px;
+  background: white;
+  border-radius: 50%;
+  position: relative;
+  animation: blink 5s infinite;
+}
+
+.eye::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 15px;
+  background: #2764c9;
+  border-radius: 50%;
+  left: 7px;
+  top: 8px;
+}
+
+.smile {
+  width: 35px;
+  height: 17px;
+  border-bottom: 4px solid white;
+  border-radius: 50%;
+  margin: 9px auto 0;
+}
+
+.cheek {
+  position: absolute;
+  width: 17px;
+  height: 9px;
+  background: #ffb7d5;
+  border-radius: 50%;
+  top: 82px;
+}
+
+.left-cheek { left: 18px; }
+.right-cheek { right: 18px; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes blink {
+  0%, 46%, 50%, 100% { transform: scaleY(1); }
+  48% { transform: scaleY(0.1); }
+}
+
+.robot-area h2 {
+  color: #3978e8;
+  font-size: 22px;
+}
+
+.robot-area p {
+  color: #8491a8;
+  margin-top: 6px;
+  font-size: 13px;
+}
+
+.chat {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  max-height: 430px;
+}
+
+.message {
+  max-width: 78%;
+  padding: 13px 16px;
+  border-radius: 16px;
+  margin-bottom: 13px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.bot-message {
+  background: white;
+  border: 1px solid #e0eaff;
+  border-top-left-radius: 4px;
+}
+
+.user-message {
+  background: #3978e8;
+  color: white;
+  margin-left: auto;
+  border-top-right-radius: 4px;
+}
+
+.input-area {
+  background: white;
+  padding: 17px;
+  display: flex;
+  gap: 10px;
+  border-top: 1px solid #dce6f8;
+}
+
+.input-area input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #dce6f8;
+  border-radius: 12px;
+  padding: 13px;
+  outline: none;
+  font-size: 14px;
+}
+
+.input-area input:focus,
+.editor input:focus,
+.editor textarea:focus {
+  border-color: #5795f5;
+}
+
+.send-btn {
+  background: #3978e8;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0 22px;
+  font-weight: bold;
+}
+
+.editor {
+  display: none;
+  background: white;
+  padding: 18px;
+  margin: 15px;
+  border-radius: 15px;
+  border: 1px solid #dce6f8;
+}
+
+.editor h3 {
+  margin-bottom: 12px;
+  color: #3978e8;
+}
+
+.editor input,
+.editor textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #dce6f8;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  font-family: inherit;
+  outline: none;
+}
+
+.editor textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.editor-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.editor-buttons button {
+  flex: 1;
+}
+
+.cancel-btn {
+  background: #e9eef8;
+  color: #52617a;
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.clear-btn {
+  background: #fff0f1;
+  color: #d45b6a;
+  border: none;
+  border-radius: 10px;
+  padding: 10px;
+  width: 100%;
+  margin-top: 10px;
+}
+
+@media (max-width: 700px) {
+  .app {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #dce6f8;
+  }
+
+  .lesson-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .chat {
+    min-height: 250px;
+  }
+
+  .message {
+    max-width: 90%;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="logo">NEXUS <span>AI</span></div>
+
+    <button class="new-btn" onclick="newChat()">
+      + New Chat
+    </button>
+
+    <button class="action-btn" onclick="toggleEditor()">
+      + Add Lesson
+    </button>
+
+    <h3>MY LESSON LIBRARY</h3>
+    <div class="lesson-list" id="lessonList"></div>
+
+    <button class="clear-btn" onclick="clearLessons()">
+      Delete All Lessons
+    </button>
+  </aside>
+
+  <main class="main">
+
+    <header class="topbar">
+      <span>Nexus Assistant</span>
+      <span class="status">● Online Demo</span>
+    </header>
+
+    <section class="robot-area">
+      <div class="robot">
+        <div class="antenna"></div>
+        <div class="eyes">
+          <div class="eye"></div>
+          <div class="eye"></div>
+        </div>
+        <div class="cheek left-cheek"></div>
+        <div class="cheek right-cheek"></div>
+        <div class="smile"></div>
+      </div>
+
+      <h2>Hello! I'm Nexus.</h2>
+      <p>Your friendly learning assistant.</p>
+    </section>
+
+    <section class="chat" id="chat">
+      <div class="message bot-message">Hi there! I'm Nexus AI. 💙
+
+Ask me a question or open a lesson from your library!</div>
+    </section>
+
+    <div class="editor" id="editor">
+      <h3>Create a New Lesson</h3>
+
+      <input id="lessonTitle" placeholder="Lesson title">
+      <input id="lessonSubject" placeholder="Subject">
+      <textarea id="lessonContent"
+        placeholder="Write your lesson here..."></textarea>
+
+      <div class="editor-buttons">
+        <button class="action-btn" onclick="saveLesson()">
+          Save Lesson
+        </button>
+        <button class="cancel-btn" onclick="toggleEditor()">
+          Cancel
+        </button>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <input
+        id="userInput"
+        type="text"
+        placeholder="Ask Nexus something..."
+        autocomplete="off"
+      >
+      <button class="send-btn" onclick="sendMessage()">
+        Send
+      </button>
+    </div>
+
+  </main>
+</div>
+
+<script>
+const chat = document.getElementById("chat");
+const userInput = document.getElementById("userInput");
+const lessonList = document.getElementById("lessonList");
+const editor = document.getElementById("editor");
+
+let lessons = [];
+
+try {
+  lessons = JSON.parse(
+    localStorage.getItem("nexusLessons") || "[]"
+  );
+
+  if (!Array.isArray(lessons)) lessons = [];
+} catch (error) {
+  lessons = [];
+}
+
+function saveToStorage() {
+  localStorage.setItem(
+    "nexusLessons",
+    JSON.stringify(lessons)
+  );
+}
+
+function addMessage(text, sender) {
+  const message = document.createElement("div");
+
+  message.className = "message " +
+    (sender === "user" ? "user-message" : "bot-message");
+
+  message.textContent = text;
+  chat.appendChild(message);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function sendMessage() {
+  const text = userInput.value.trim();
+
+  if (!text) return;
+
+  addMessage(text, "user");
+  userInput.value = "";
+
+  setTimeout(function() {
+    addMessage(getReply(text), "bot");
+  }, 400);
+}
+
+userInput.addEventListener("keydown", function(event) {
+  if (event.key === "Enter") {
+    sendMessage();
+  }
+});
+
+function getReply(text) {
+  const question = text.toLowerCase();
+
+  if (question.includes("hello") ||
+      question.includes("hi") ||
+      question.includes("hey")) {
+    return "Hello! 💙 What would you like to learn today?";
+  }
+
+  if (question.includes("who are you")) {
+    return "I'm Nexus AI, your friendly learning assistant! 🤖";
+  }
+
+  if (question.includes("fraction")) {
+    return "A fraction represents part of a whole. For example, 1/2 means one out of two equal parts.";
+  }
+
+  if (question.includes("math")) {
+    return "Let's solve some math! Send me your math question.";
+  }
+
+  if (question.includes("science")) {
+    return "Science helps us understand the world through observation, experiments, and evidence.";
+  }
+
+  if (question.includes("thank")) {
+    return "You're welcome! Happy to help! 💙";
+  }
+
+  if (question.includes("help")) {
+    return "I can answer some basic questions and help you find lessons saved in your library.";
+  }
+
+  const matchingLesson = lessons.find(function(lesson) {
+    return (lesson.title + " " + lesson.subject)
+      .toLowerCase()
+      .includes(question);
+  });
+
+  if (matchingLesson) {
+    return "I found a lesson called " +
+      matchingLesson.title +
+      ". Open it from your lesson library to read the full content!";
+  }
+
+  return "That's an interesting question! I'm currently using demo replies. I need a real AI connection to answer questions freely. You can also ask me about fractions, math, or science.";
+}
+
+function newChat() {
+  chat.innerHTML = "";
+
+  addMessage(
+    "New conversation started! What would you like to learn? 💙",
+    "bot"
+  );
+}
+
+function toggleEditor() {
+  editor.style.display =
+    editor.style.display === "block" ? "none" : "block";
+}
+
+function saveLesson() {
+  const title = document.getElementById("lessonTitle").value.trim();
+  const subject = document.getElementById("lessonSubject").value.trim();
+  const content = document.getElementById("lessonContent").value.trim();
+
+  if (!title || !subject || !content) {
+    alert("Please fill in the title, subject, and lesson content.");
+    return;
+  }
+
+  lessons.push({
+    id: Date.now(),
+    title: title,
+    subject: subject,
+    content: content
+  });
+
+  saveToStorage();
+  renderLessons();
+
+  document.getElementById("lessonTitle").value = "";
+  document.getElementById("lessonSubject").value = "";
+  document.getElementById("lessonContent").value = "";
+
+  editor.style.display = "none";
+
+  addMessage(
+    "Your lesson '" + title + "' has been saved! 💙",
+    "bot"
+  );
+}
+
+function renderLessons() {
+  lessonList.innerHTML = "";
+
+  if (lessons.length === 0) {
+    const empty = document.createElement("p");
+    empty.textContent = "No lessons saved yet.";
+    empty.style.color = "#8491a8";
+    empty.style.fontSize = "13px";
+
+    lessonList.appendChild(empty);
+    return;
+  }
+
+  lessons.forEach(function(lesson) {
+    const item = document.createElement("div");
+    item.className = "lesson-item";
+
+    const title = document.createElement("strong");
+    title.textContent = lesson.title;
+
+    const subject = document.createElement("small");
+    subject.textContent = lesson.subject;
+
+    item.appendChild(title);
+    item.appendChild(subject);
+
+    item.addEventListener("click", function() {
+      openLesson(lesson.id);
+    });
+
+    lessonList.appendChild(item);
+  });
+}
+
+function openLesson(id) {
+  const lesson = lessons.find(function(item) {
+    return item.id === id;
+  });
+
+  if (!lesson) return;
+
+  chat.innerHTML = "";
+
+  addMessage(
+    "📚 " + lesson.title +
+    "\nSubject: " + lesson.subject +
+    "\n\n" + lesson.content,
+    "bot"
+  );
+}
+
+function clearLessons() {
+  if (!confirm("Are you sure you want to delete all saved lessons?")) {
+    return;
+  }
+
+  lessons = [];
+  saveToStorage();
+  renderLessons();
+}
+
+renderLessons();
+</script>
+
+</body>
+</html>
